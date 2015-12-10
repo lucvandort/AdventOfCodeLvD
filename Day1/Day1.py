@@ -47,8 +47,8 @@ for code, position in testcodes2.items():
     assert(get_basement_position(code)==position)
     
 #%% import input text
-inputfile = open('input.txt')
-inputcode = inputfile.read()
+with open('input.txt', 'r') as inputfile:
+    inputcode = inputfile.read()
 
 #%% answer part 1
 floornumber = get_floornumber(inputcode)
