@@ -2,21 +2,33 @@
 
 #%% 
 
-def count_presents(inputcommands):
-    present_counter = {(0,0): 1}
-    position_log = [(0,0)]
+def get_route_coordinates(inputcommands):
+    x_pos = 0    
+    y_pos = 0
+    position_log = [(x_pos,y_pos)]
     
     for c in inputcommands:
         if c is "^":
-            position_log.append((position_log[-1][0],position_log[-1][1]+1))
+            y_pos += 1
         elif c is "v":
-            position_log.append((position_log[-1][0],position_log[-1][1]-1))
+            y_pos -= 1
         elif c is ">":
-            position_log.append((position_log[-1][0]+1,position_log[-1][1]))
+            x_pos += 1
         elif c is "<":
-            position_log.append((position_log[-1][0]-1,position_log[-1][1]))
+            y_pos -= 1
+        position_log.append((x_pos,y_pos))
         
-        print(position_log[-1])
+    return position_log
+        
+def get_present_count(route_coordinates):
+    present_count = {
+        #(x,y): N       
+    }    
+    
+    # hier moet dus iets dat het aantal kadootjes op elk coordinaat gaat tellen.
+
+    return present_count
+    
             
 
 #%%
@@ -26,5 +38,5 @@ testinput = {
     "^v^v^v^v^v": 2,
 }
 
-
-count_presents("^v^v^v^v^v")
+route_coordinates = get_route_coordinates("^v^v^><<>><v^v^v")
+present_count = get_present_count(route_coordinates)
