@@ -25,7 +25,11 @@ def get_present_count(route_coordinates):
         #(x,y): N       
     }    
     
-    # hier moet dus iets dat het aantal kadootjes op elk coordinaat gaat tellen.
+    for coordinate in route_coordinates:
+        try:
+            present_count[coordinate] += 1
+        except KeyError:
+            present_count[coordinate] = 1
 
     return present_count
     
