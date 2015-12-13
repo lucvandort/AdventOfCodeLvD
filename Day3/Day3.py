@@ -15,7 +15,7 @@ def get_route_coordinates(inputcommands):
         elif c is ">":
             x_pos += 1
         elif c is "<":
-            y_pos -= 1
+            x_pos -= 1
         position_log.append((x_pos,y_pos))
         
     return position_log
