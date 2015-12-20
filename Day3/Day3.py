@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import matplotlib.pyplot as plt
+
 #%% 
 
 def get_route_coordinates(inputcommands):
@@ -33,7 +35,18 @@ def get_present_count(route_coordinates):
 
     return present_count
     
-            
+#2nd exercise: 1 santa and 1 robotsanta take turns to deliver presents.
+    
+#%% figure route
+
+def plot_route(route_coordinates):
+    fig = plt.figure()
+    ax = plt.subplot(1,1,1)
+    
+    x,y = list(zip(*route_coordinates))
+    ax.plot(x,y)
+        
+    fig.tight_layout()
 
 #%%
 testinput = {
@@ -42,5 +55,18 @@ testinput = {
     "^v^v^v^v^v": 2,
 }
 
-route_coordinates = get_route_coordinates("^v^v^><<>><v^v^v")
+for inputstring, houses in testinput.items():    
+    route_coordinates = get_route_coordinates(inputstring)
+    present_count = get_present_count(route_coordinates)
+    num_coordinates = len(present_count)
+    assert(houses == num_coordinates)
+
+#%% import data
+
+with open('input.txt', 'r') as inputfile:
+    inputcode = inputfile.read()    
+        
+route_coordinates = get_route_coordinates(inputcode)
 present_count = get_present_count(route_coordinates)
+num_coordinates = len(present_count)
+plot_route(route_coordinates)
