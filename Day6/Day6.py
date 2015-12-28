@@ -31,6 +31,22 @@ def calculate_lights(commands, gridsize=1000):
         
     return grid
     
+def calculate_light_intensity(commands, gridsize=1000):
+    grid = np.zeros((gridsize,gridsize), dtype=int)
+    
+    for index in commands.index:
+        raw, com, x1, y1, x2, y2 = commands.loc[index]
+        if com == 'turn on':
+            grid[x1:x2+1,y1:y2+1] += 1
+        elif com == 'turn off':
+            grid[x1:x2+1,y1:y2+1] -= 1
+            grid[grid < 0] = 0
+        elif com == 'toggle':
+            grid[x1:x2+1,y1:y2+1] += 2
+        
+    return grid
+    
+    
 COMMAND_COLUMNS = ['Inputstring', 'com', 'x1', 'y1', 'x2', 'y2']
 
     
@@ -42,8 +58,10 @@ testcommands = pd.DataFrame(index=range(3), columns=COMMAND_COLUMNS)
 testcommands.loc[0] = (None, 'turn on', 1, 3, 2, 4)
 testcommands.loc[1] = (None, 'toggle', 1, 1, 3, 4) 
 testcommands.loc[2] = (None, 'turn off', 2, 2, 2, 4)
+testcommands.loc[3] = (None, 'turn off', 4, 4, 4, 4)
 
 testgrid = calculate_lights(testcommands, gridsize=5)
+testgrid2 = calculate_light_intensity(testcommands, gridsize=5)
     
 #%% read input
 
@@ -58,6 +76,8 @@ commands['Inputstring'] = inputstrings
 commands = process_commands(commands)
 
 grid = calculate_lights(commands)
-
 num_lights = np.count_nonzero(grid)
+
+grid_intensities = calculate_light_intensity(commands)
+total_intensity = grid_intensities.sum()
 
