@@ -30,7 +30,7 @@ i=0
 while check == False:
     i+=1
     input_hash_readable = get_hash(input_string+str(i))
-    check = check_ready(input_hash_readable)
+    check = check_ready_5(input_hash_readable)
     
     #print(input_string+str(i), input_hash_readable, check)
 
@@ -57,3 +57,6 @@ while check2 == False:
 
 print(input_string+str(i2), input_hash_readable2, check2)
 print(time.ctime())
+
+
+# 8 nullen komt bij i=318903846
