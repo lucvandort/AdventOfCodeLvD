@@ -80,7 +80,7 @@ record_columns.extend(range(60))
 dates = list(processed_data.groupby(['month', 'day']).groups)
 
 records = pd.DataFrame(
-    data='.',
+    data=0,
     index=range(len(dates)),
     columns=record_columns,
 )
@@ -100,23 +100,42 @@ for row in processed_data.itertuples():
         records.loc[
             (records.month == row.month) & (records.day == row.day),
             np.arange(row.minute, 60)
-            ] = '#'
+            ] = 1
     elif row.event == 'wakes up':
         records.loc[
             (records.month == row.month) & (records.day == row.day),
             np.arange(row.minute, 60)
-            ] = '.'
+            ] = 0
 
 # %%
 guards = list(processed_data.groupby('guard').groups)
 columns = [
     'sleep_minutes',
+    'most_sleepy_minute',
+    'sleep_during_most_sleepy_minute',
 ]
 guard_sleep_stats = pd.DataFrame(index=guards, columns=columns)
 guard_sleep_stats.loc[:, 'sleep_minutes'] = 0
 
 for record in records.itertuples():
-    guard_sleep_stats.loc[record.guard, 'sleep_minutes'] += record.count('#')
+    guard_sleep_stats.loc[record.guard, 'sleep_minutes'] += record.count(1)
+
+for guard in guards:
+    most_sleep_stat = records.loc[
+        (records.loc[:, 'guard'] == guard), np.arange(0, 60)
+        ].sum().sort_values(ascending=False).head(1)
+    guard_sleep_stats.loc[guard, 'most_sleepy_minute'] = \
+        most_sleep_stat.index
+    guard_sleep_stats.loc[guard, 'sleep_during_most_sleepy_minute'] = \
+        most_sleep_stat.values
 
 most_sleepy_guard = guard_sleep_stats.sort_values(
-    by='sleep_minutes', ascending=False).head(1).index
+    by='sleep_minutes', ascending=False).head(1).index.values
+most_sleepy_minute = guard_sleep_stats.loc[
+    most_sleepy_guard, 'most_sleepy_minute'].values
+guard_id_sleepy_minute_multiplier = int(most_sleepy_guard) * most_sleepy_minute
+
+print(f"The the ID of the guard ({most_sleepy_guard}) multiplied by the most "
+    f"sleepy minute ({most_sleepy_minute}) is "
+    f"{guard_id_sleepy_minute_multiplier}")
+
