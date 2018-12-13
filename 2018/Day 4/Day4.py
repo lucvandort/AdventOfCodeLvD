@@ -68,7 +68,7 @@ def process_guard_actions(row):
 processed_data.apply(process_guard_actions, axis=1)
 
 
-# %% Part 1
+# %%
 
 record_columns = [
     'month',
@@ -107,7 +107,7 @@ for row in processed_data.itertuples():
             np.arange(row.minute, 60)
             ] = 0
 
-# %%
+# %% Part 1
 guards = list(processed_data.groupby('guard').groups)
 columns = [
     'sleep_minutes',
@@ -135,7 +135,25 @@ most_sleepy_minute = guard_sleep_stats.loc[
     most_sleepy_guard, 'most_sleepy_minute'].values
 guard_id_sleepy_minute_multiplier = int(most_sleepy_guard) * most_sleepy_minute
 
-print(f"The the ID of the guard ({most_sleepy_guard}) multiplied by the most "
+print(
+    f"The the ID of the most sleepy guard ({most_sleepy_guard}) "
+    "multiplied by his most "
     f"sleepy minute ({most_sleepy_minute}) is "
-    f"{guard_id_sleepy_minute_multiplier}")
+    f"{guard_id_sleepy_minute_multiplier}"
+)
 
+# %% Part 2
+
+most_consequent_sleeping_guard = guard_sleep_stats.sort_values(
+    by='sleep_during_most_sleepy_minute', ascending=False).head(1).index.values
+most_sleepy_minute_2 = guard_sleep_stats.loc[
+    most_consequent_sleeping_guard, 'most_sleepy_minute'].values
+guard_id_sleepy_minute_multiplier_2 = int(most_consequent_sleeping_guard) * \
+    most_sleepy_minute_2
+
+print(
+    f"The the ID of the most consequent sleeping guard "
+    f"({most_consequent_sleeping_guard}) multiplied by his most "
+    f"sleepy minute ({most_sleepy_minute}) is "
+    f"{guard_id_sleepy_minute_multiplier_2}"
+)
