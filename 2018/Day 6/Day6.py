@@ -17,7 +17,8 @@ min_XY = inputdata.values.min()
 max_XY = inputdata.values.max()
 array_size = max_XY+min_XY+1
 
-coordinate_grid = np.full([array_size, array_size], fill_value='', dtype='U3')
+coordinate_grid = \
+    np.full([array_size, array_size], fill_value='', dtype='U3')
 
 
 def init_coordinate_grid(row):
@@ -106,15 +107,63 @@ finite_areas = \
 print(f"The infinite areas are: {infinite_areas}")
 print(f"The finite areas are: {finite_areas}")
 
-# %%
+# %% Part 1
 
 index, counts = np.unique(coordinate_grid, return_counts=True)
 area_sizes = pd.DataFrame(index=index, columns=['count'], data=counts)
 finite_area_sizes = \
-        area_sizes.loc[[c.lower() for c in finite_areas], :].sort_values(by='count', ascending=False)
+        area_sizes.loc[[c.lower() for c in finite_areas], :].\
+        sort_values(by='count', ascending=False) \
+        + 1
 largest_finite_area = finite_area_sizes.head(1)
 
-print(f"The largest finite area is {largest_finite_area.index.values[0]} "
-      f"and has has size {largest_finite_area.loc[:, 'count'].values[0]}"
+print(
+    f"The largest finite area is {largest_finite_area.index.values[0]} "
+    f"and has has size {largest_finite_area.loc[:, 'count'].values[0]}"
+)
+
+# %% initialize coordinate grid 2
+
+coordinate_grid_2 = \
+    np.zeros([array_size, array_size])
+
+
+def determine_total_manhattan_distance(x, y):
+    x_distance = x_distance_lookup.loc[:, x]
+    y_distance = y_distance_lookup.loc[:, y]
+    manhattan_distance = x_distance + y_distance
+    return manhattan_distance.sum()
+
+
+it2 = np.nditer(
+    coordinate_grid_2,
+    flags=['multi_index'],
+    op_flags=['writeonly']
+)
+
+# %% calculate closest coordinates
+
+with it2, tqdm(total=it2.itersize) as pbar:
+    while not it2.finished:
+        x, y = it2.multi_index
+        if it2[0] == 0:
+            c = determine_total_manhattan_distance(x, y)
+            it2[0] = c
+        it2.iternext()
+        pbar.update()
+
+# %% find closest coordinates
+
+def find_total_distance_less_than(coordinate_grid, distance=10000):
+    index, counts = np.unique((coordinate_grid < distance), return_counts=True)
+    closer_than = pd.DataFrame(index=index, columns=['count'], data=counts)
+    return closer_than.loc[True, 'count']
+
+# %% Part 2
+
+print(
+    f"The size of the region containing all locations which have a total "
+    f"distance to all given coordinates of less than 10000 is "
+    f"{find_total_distance_less_than(coordinate_grid_2)}."
 )
 
