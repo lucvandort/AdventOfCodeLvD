@@ -74,7 +74,7 @@ def determine_closest_manhattan_distance(x, y):
 
 it = np.nditer(coordinate_grid, flags=['multi_index'], op_flags=['writeonly'])
 
-# %%
+# %% calculate closest coordinates
 
 with it, tqdm(total=it.itersize) as pbar:
     while not it.finished:
@@ -90,3 +90,31 @@ with it, tqdm(total=it.itersize) as pbar:
 
 output = pd.DataFrame(coordinate_grid)
 output.to_excel('output.xlsx')
+
+# %% find infinite areas
+
+infinite_areas = set()
+infinite_areas |= set(np.unique(coordinate_grid[0, :]))
+infinite_areas |= set(np.unique(coordinate_grid[:, 0]))
+infinite_areas |= set(np.unique(coordinate_grid[-1, :]))
+infinite_areas |= set(np.unique(coordinate_grid[:, -1]))
+
+infinite_areas = set(c.upper() for c in infinite_areas)
+finite_areas = \
+        set(c for c in inputdata.index.values if c not in infinite_areas)
+
+print(f"The infinite areas are: {infinite_areas}")
+print(f"The finite areas are: {finite_areas}")
+
+# %%
+
+index, counts = np.unique(coordinate_grid, return_counts=True)
+area_sizes = pd.DataFrame(index=index, columns=['count'], data=counts)
+finite_area_sizes = \
+        area_sizes.loc[[c.lower() for c in finite_areas], :].sort_values(by='count', ascending=False)
+largest_finite_area = finite_area_sizes.head(1)
+
+print(f"The largest finite area is {largest_finite_area.index.values[0]} "
+      f"and has has size {largest_finite_area.loc[:, 'count'].values[0]}"
+)
+
