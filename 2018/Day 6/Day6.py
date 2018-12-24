@@ -154,16 +154,18 @@ with it2, tqdm(total=it2.itersize) as pbar:
 
 # %% find closest coordinates
 
+
 def find_total_distance_less_than(coordinate_grid, distance=10000):
     index, counts = np.unique((coordinate_grid < distance), return_counts=True)
     closer_than = pd.DataFrame(index=index, columns=['count'], data=counts)
     return closer_than.loc[True, 'count']
 
+
 # %% Part 2
+
 
 print(
     f"The size of the region containing all locations which have a total "
     f"distance to all given coordinates of less than 10000 is "
     f"{find_total_distance_less_than(coordinate_grid_2)}."
 )
-
