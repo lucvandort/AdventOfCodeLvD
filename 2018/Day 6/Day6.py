@@ -20,19 +20,49 @@ array_size = max_XY+min_XY+1
 coordinate_grid = np.full([array_size, array_size], fill_value='', dtype='U3')
 
 
-def fill_coordinate_grid(row):
+def init_coordinate_grid(row):
     coordinate_grid[row['X'], row['Y']] = row.name
     return
 
 
-inputdata.apply(fill_coordinate_grid, axis=1)
+inputdata.apply(init_coordinate_grid, axis=1)
 
-# %% fill grid
+# %% fill grid with closest manhattan distance
+
+x_distance_lookup = pd.DataFrame(
+        index=inputdata.index,
+        columns=range(array_size),
+)
+y_distance_lookup = pd.DataFrame(
+        index=inputdata.index,
+        columns=range(array_size),
+)
 
 
-def calculate_minimum_manhattan_distance(x, y):
-    x_distance = abs(inputdata.loc[:, 'X'] - x)
-    y_distance = abs(inputdata.loc[:, 'Y'] - y)
+def calculate_distance_from_coordinates(row, richting=None):
+    if richting is None:
+        raise Exception('Give axis!')
+    coordinate = inputdata.loc[row.name, richting]
+    distances = np.abs(np.arange(0-coordinate, array_size-coordinate))
+    row.loc[:] = distances
+    return row
+
+
+x_distance_lookup = x_distance_lookup.apply(
+        calculate_distance_from_coordinates,
+        richting='X',
+        axis=1,
+)
+y_distance_lookup = y_distance_lookup.apply(
+        calculate_distance_from_coordinates,
+        richting='Y',
+        axis=1,
+)
+
+
+def determine_closest_manhattan_distance(x, y):
+    x_distance = x_distance_lookup.loc[:, x]
+    y_distance = y_distance_lookup.loc[:, y]
     manhattan_distance = x_distance + y_distance
     closest_coordinates = \
         manhattan_distance[manhattan_distance == manhattan_distance.min()]
@@ -44,14 +74,13 @@ def calculate_minimum_manhattan_distance(x, y):
 
 it = np.nditer(coordinate_grid, flags=['multi_index'], op_flags=['writeonly'])
 
-
 # %%
 
 with it, tqdm(total=it.itersize) as pbar:
     while not it.finished:
         x, y = it.multi_index
         if it[0] == '':
-            c = calculate_minimum_manhattan_distance(x, y)
+            c = determine_closest_manhattan_distance(x, y)
             it[0] = c
         it.iternext()
         pbar.update()
