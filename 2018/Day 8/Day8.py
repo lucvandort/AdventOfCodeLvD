@@ -66,7 +66,7 @@ print(f"The sum of all node metadata is {sum_of_metadata}.")
 # %% Part 2
 
 
-def calculate_root_value(nodes, node_index=0, pbar=None):
+def calculate_node_value(nodes, node_index=0, pbar=None):
     current_node = nodes.loc[node_index, :]
     node_value = 0
 
@@ -76,7 +76,7 @@ def calculate_root_value(nodes, node_index=0, pbar=None):
     else:
         for metadata in current_node.loc['metadata']:
             try:
-                node_value += calculate_root_value(
+                node_value += calculate_node_value(
                     nodes,
                     node_index=current_node.loc['children'][metadata-1],
                     pbar=pbar,
@@ -89,6 +89,6 @@ def calculate_root_value(nodes, node_index=0, pbar=None):
 
 
 with tqdm() as pbar:
-    root_value = calculate_root_value(nodes, pbar=pbar)
+    root_value = calculate_node_value(nodes, pbar=pbar)
 
 print(f"The root node value is {root_value}.")
