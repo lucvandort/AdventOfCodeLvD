@@ -31,12 +31,12 @@
      <number>9</number>
     </property>
     <item>
-     <widget class="PlotWidget" name="graphicsView"/>
+     <widget class="PlotWidget" name="starSky"/>
     </item>
     <item>
      <widget class="QSlider" name="TimeSlider">
       <property name="maximum">
-       <number>100</number>
+       <number>20000</number>
       </property>
       <property name="sliderPosition">
        <number>0</number>
@@ -112,7 +112,7 @@
          <number>999999</number>
         </property>
         <property name="value">
-         <number>100</number>
+         <number>20000</number>
         </property>
        </widget>
       </item>
